@@ -8,7 +8,7 @@ gridButtons.forEach((button) => {
         if (level >= 4) {
             button.dataset.level = '0'
         } else {
-            ;(button.dataset.level++).toString()
+            (button.dataset.level++).toString()
         }
     })
 })
@@ -94,3 +94,12 @@ genButton.addEventListener('click', () => {
         }
     })
 })
+
+function handlePreset(preset) {
+    switch (preset) {
+        case 'snake':
+            break
+        default:
+            break
+    }
+}
