@@ -29,14 +29,28 @@
                         :key="day.id"
                         :data-count="day.count"
                         @click="handleDayClick(day)"
+                        :data-current-day="currentDayOfWeek === day.id || undefined"
                     >
                     </button>
                 </div>
             </div>
-            <pre>{{ days.filter(day => day.count > 0) }}</pre>
+            <div style="text-align: center;">
+                <button @click="handleClearClick">Clear All</button>
+            </div>
+            <h2>Schedule:</h2>
+            <ul>
+                <li
+                    v-for="(item, i) in scheduleArray"
+                    :key="i"
+                >
+                    {{ item.date.toDateString() }}: {{ item.contributions }}
+                </li>
+            </ul>
+            <h2>JSON data:</h2>
+            <!-- <pre>{{ days.filter(day => day.count > 0) }}</pre> -->
         </div>
         <script type="module">
-        import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+        import { computed, createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 
         createApp({
             setup() {
@@ -54,6 +68,12 @@
                     }
                 }
 
+                function handleClearClick(preset) {
+                    for (let i = 0; i < days.value.length; i++) {
+                        days.value[i].count = 0
+                    }
+                }
+
                 function handlePresetClick(preset) {
                     let n = 0
                     for (let i = 0; i < days.value.length; i++) {
@@ -65,6 +85,38 @@
                         }
                     }
                 }
+
+                const today = new Date()
+                const currentDayOfWeek = today.getDay()
+
+                const scheduleArray = computed(() => {
+
+                    const daysWithContributions = days.value.filter(day => day.count > 0)
+                    
+                    // Get the date of the Sunday corresponding to day.id === 0
+                    const baseSunday = currentDayOfWeek === 0
+                        ? today
+                        : new Date(today.getFullYear(), today.getMonth(), today.getDate() - currentDayOfWeek)
+
+                        // [ ] TODO: figure out offset of all dates
+                    const offset = daysWithContributions[0]?.id % 7 < currentDayOfWeek
+                        ? 7 * Math.floor(daysWithContributions[0]?.id / 7)
+                        : currentDayOfWeek
+
+                    // console.log(offset)
+
+                    return daysWithContributions.map((day) => {
+                        return {
+                            date: new Date(baseSunday.getTime() + (day.id * 86_400_000) /*+ (offset * 86_400_000)*/),
+                            contributions: day.count
+                        }
+                    })
+
+                    // return [
+                    //     { date: baseSunday, contributions: 1 },
+                    //     { date: new Date(baseSunday.getTime() + 86_400_000), contributions: 3 },
+                    // ]
+                })
 
                 const presets = [
                     {
@@ -409,13 +461,125 @@
                             { id: 363, count: 2 },
                         ]
                     },
+                    {
+                        name: 'Bubbles',
+                        days: [
+                            { id: 0, count: 1 },
+                            { id: 1, count: 2 },
+                            { id: 4, count: 1 },
+                            { id: 12, count: 1 },
+                            { id: 13, count: 2 },
+                            { id: 22, count: 3 },
+                            { id: 23, count: 4 },
+                            { id: 28, count: 2 },
+                            { id: 31, count: 4 },
+                            { id: 35, count: 1 },
+                            { id: 38, count: 3 },
+                            { id: 41, count: 4 },
+                            { id: 43, count: 1 },
+                            { id: 44, count: 2 },
+                            { id: 47, count: 3 },
+                            { id: 53, count: 2 },
+                            { id: 60, count: 1 },
+                            { id: 63, count: 2 },
+                            { id: 64, count: 3 },
+                            { id: 67, count: 1 },
+                            { id: 72, count: 3 },
+                            { id: 75, count: 1 },
+                            { id: 79, count: 2 },
+                            { id: 83, count: 1 },
+                            { id: 84, count: 1 },
+                            { id: 85, count: 1 },
+                            { id: 100, count: 2 },
+                            { id: 101, count: 2 },
+                            { id: 104, count: 1 },
+                            { id: 106, count: 1 },
+                            { id: 109, count: 2 },
+                            { id: 111, count: 1 },
+                            { id: 113, count: 1 },
+                            { id: 116, count: 2 },
+                            { id: 121, count: 1 },
+                            { id: 122, count: 1 },
+                            { id: 132, count: 2 },
+                            { id: 138, count: 1 },
+                            { id: 140, count: 3 },
+                            { id: 141, count: 4 },
+                            { id: 145, count: 1 },
+                            { id: 149, count: 4 },
+                            { id: 153, count: 1 },
+                            { id: 157, count: 4 },
+                            { id: 164, count: 3 },
+                            { id: 171, count: 3 },
+                            { id: 177, count: 2 },
+                            { id: 182, count: 1 },
+                            { id: 183, count: 1 },
+                            { id: 186, count: 3 },
+                            { id: 187, count: 4 },
+                            { id: 192, count: 2 },
+                            { id: 195, count: 4 },
+                            { id: 196, count: 2 },
+                            { id: 199, count: 1 },
+                            { id: 202, count: 3 },
+                            { id: 204, count: 3 },
+                            { id: 207, count: 1 },
+                            { id: 208, count: 2 },
+                            { id: 211, count: 2 },
+                            { id: 217, count: 1 },
+                            { id: 220, count: 2 },
+                            { id: 221, count: 3 },
+                            { id: 222, count: 4 },
+                            { id: 226, count: 2 },
+                            { id: 230, count: 4 },
+                            { id: 232, count: 1 },
+                            { id: 239, count: 1 },
+                            { id: 246, count: 1 },
+                            { id: 254, count: 1 },
+                            { id: 258, count: 2 },
+                            { id: 262, count: 1 },
+                            { id: 263, count: 1 },
+                            { id: 264, count: 1 },
+                            { id: 266, count: 3 },
+                            { id: 273, count: 3 },
+                            { id: 276, count: 2 },
+                            { id: 277, count: 3 },
+                            { id: 282, count: 1 },
+                            { id: 285, count: 3 },
+                            { id: 289, count: 1 },
+                            { id: 292, count: 2 },
+                            { id: 297, count: 1 },
+                            { id: 298, count: 1 },
+                            { id: 307, count: 3 },
+                            { id: 308, count: 2 },
+                            { id: 309, count: 3 },
+                            { id: 313, count: 2 },
+                            { id: 317, count: 3 },
+                            { id: 319, count: 1 },
+                            { id: 324, count: 2 },
+                            { id: 326, count: 1 },
+                            { id: 329, count: 1 },
+                            { id: 330, count: 1 },
+                            { id: 333, count: 1 },
+                            { id: 341, count: 1 },
+                            { id: 344, count: 2 },
+                            { id: 345, count: 2 },
+                            { id: 349, count: 1 },
+                            { id: 350, count: 1 },
+                            { id: 353, count: 2 },
+                            { id: 357, count: 1 },
+                            { id: 360, count: 2 },
+                            { id: 363, count: 2 },
+                        ]
+                    },
                 ]
 
                 return {
+                    currentDayOfWeek,
                     days,
+                    handleClearClick,
                     handleDayClick,
                     handlePresetClick,
-                    presets
+                    presets,
+                    scheduleArray
                 }
             }
         }).mount('#app')
