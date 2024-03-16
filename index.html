@@ -8,16 +8,20 @@
     </head>
     <body>
         <div id="app">
-            <div class="presets">
-                <button
-                    v-for="preset in presets"
-                    :key="preset.name"
-                    @click="handlePresetClick(preset)"
-                >
-                    {{ preset.name }}
-                </button>
+            <h1>GitHub Contribution Doodle Maker</h1>
+            <p>Click boxes in the grid below to draw a design for your own GitHub timeline, then use the generated schedule (or JSON data) to make commits to bring your doodle to life!</p>
+            <div class="controls">
+                <div class="controls-left">
+                    <button @click="handleClearClick">Clear All</button>
+                </div>
+                <div class="controls-right">
+                    Size:
+                    <button @click="gridSize = 'sm'">Small</button>
+                    <button @click="gridSize = 'md'">Medium</button>
+                    <button @click="gridSize = 'lg'">Large</button>
+                </div>
             </div>
-            <div class="grid-wrapper" data-size="md">
+            <div class="grid-wrapper" :data-size="gridSize">
                 <div class="grid-labels">
                     <span>Mon</span>
                     <span>Wed</span>
@@ -34,13 +38,20 @@
                     </button>
                 </div>
             </div>
-            <div style="text-align: center;">
-                <button @click="handleClearClick">Clear All</button>
+            <h2>Presets:</h2>
+            <div class="presets">
+                <button
+                    v-for="preset in presets"
+                    :key="preset.name"
+                    @click="handlePresetClick(preset)"
+                >
+                    {{ preset.name }}
+                </button>
             </div>
             <div class="table-col">
                 <h2>Schedule:</h2>
                 <div class="table-wrapper">
-                    <table>
+                    <table v-show="scheduleArray.length > 0">
                         <tr>
                             <th>Date:</th>
                             <th># of Commits:</th>
@@ -50,7 +61,7 @@
                             :key="i"
                         >
                             <td>{{ item.date.toDateString() }}</td>
-                            <td>{{ item.contributions }} commit{{ item.contributions > 1 ? 's' : '' }}</td>
+                            <td>{{ item.contributions }}</td>
                         </tr>
                     </table>
                 </div>
@@ -63,6 +74,8 @@
 
         createApp({
             setup() {
+                const gridSize = ref('sm')
+
                 const days = ref([])
 
                 for (let i = 0; i < 364; i++) {
@@ -814,6 +827,7 @@
                 return {
                     currentDayOfWeek,
                     days,
+                    gridSize,
                     handleClearClick,
                     handleDayClick,
                     handlePresetClick,
