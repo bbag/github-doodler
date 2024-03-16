@@ -37,15 +37,24 @@
             <div style="text-align: center;">
                 <button @click="handleClearClick">Clear All</button>
             </div>
-            <h2>Schedule:</h2>
-            <!-- <ul>
-                <li
-                    v-for="(item, i) in scheduleArray"
-                    :key="i"
-                >
-                    {{ item.date.toDateString() }}: {{ item.contributions }}
-                </li>
-            </ul> -->
+            <div class="table-col">
+                <h2>Schedule:</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <tr>
+                            <th>Date:</th>
+                            <th># of Commits:</th>
+                        </tr>
+                        <tr
+                            v-for="(item, i) in scheduleArray"
+                            :key="i"
+                        >
+                            <td>{{ item.date.toDateString() }}</td>
+                            <td>{{ item.contributions }} commit{{ item.contributions > 1 ? 's' : '' }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
             <h2>JSON data:</h2>
             <pre>{{ days.filter(day => day.count > 0) }}</pre>
         </div>
@@ -92,30 +101,26 @@
                 const scheduleArray = computed(() => {
 
                     const daysWithContributions = days.value.filter(day => day.count > 0)
+
+                    // If there are no days with contributions, exit early and return an empty array
+                    if (!daysWithContributions.length) return []
                     
                     // Get the date of the Sunday corresponding to day.id === 0
                     const baseSunday = currentDayOfWeek === 0
                         ? today
                         : new Date(today.getFullYear(), today.getMonth(), today.getDate() - currentDayOfWeek)
 
-                        // [ ] TODO: figure out offset of all dates
-                    const offset = daysWithContributions[0]?.id % 7 < currentDayOfWeek
-                        ? 7 * Math.floor(daysWithContributions[0]?.id / 7)
-                        : currentDayOfWeek
-
-                    // console.log(offset)
+                    // Offset the days in the schedule to start the commits as soon as possible
+                    const offset = (daysWithContributions[0]?.id || 0) % 7 < currentDayOfWeek
+                        ? 7 * (Math.floor(daysWithContributions[0]?.id / 7) - 1)
+                        : 7 * Math.floor(daysWithContributions[0]?.id / 7)
 
                     return daysWithContributions.map((day) => {
                         return {
-                            date: new Date(baseSunday.getTime() + (day.id * 86_400_000) /*+ (offset * 86_400_000)*/),
+                            date: new Date(baseSunday.getTime() + (day.id * 86_400_000) - (offset * 86_400_000)),
                             contributions: day.count
                         }
                     })
-
-                    // return [
-                    //     { date: baseSunday, contributions: 1 },
-                    //     { date: new Date(baseSunday.getTime() + 86_400_000), contributions: 3 },
-                    // ]
                 })
 
                 const presets = [
