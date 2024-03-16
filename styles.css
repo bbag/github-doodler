@@ -107,11 +107,6 @@ button[data-count="2"] { background: var(--c2); }
 button[data-count="3"] { background: var(--c3); }
 button[data-count="4"] { background: var(--c4); }
 
-.grid button[data-current-day="true"] {
-  outline: 1px solid rgba(255, 255, 255, 0.25);
-  outline-offset: var(--offset, 1px);
-}
-
 .presets {
     align-items: center;
     display: flex;
